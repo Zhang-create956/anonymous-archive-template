@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="匿名个人档案馆模板">
+  <title>个人档案馆模板</title>
+  <style>
+    :root { --ink:#090b10; --paper:#fbfaf8; --blue:#168de9; --blue-deep:#0876ca; --line:#151821; --muted:#647080; --ease:cubic-bezier(.22,.8,.22,1); }
+    * { box-sizing:border-box; }
+    html, body { min-height:100%; }
+    body { margin:0; color:var(--ink); background:#0d1119; font-family:"Arial Black","Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif; }
+    button { font:inherit; }
+    .app { position:relative; min-height:100vh; min-height:100dvh; overflow:hidden; background:#0d1119; }
+    .intro, .archive { position:absolute; inset:0; display:grid; place-items:center; }
+    .intro { z-index:20; color:#fff; background:#000; transition:opacity 650ms var(--ease), visibility 0s linear 650ms; }
+    .intro.is-hidden { opacity:0; pointer-events:none; visibility:hidden; }
+    .intro button { padding:13px 22px; color:#fff; font-size:14px; font-weight:900; letter-spacing:.08em; background:transparent; border:1px solid rgba(255,255,255,.55); border-radius:999px; cursor:pointer; }
+    .intro button:hover, .intro button:focus-visible { color:#000; background:#fff; outline:none; }
+    .archive { opacity:0; pointer-events:none; transition:opacity 650ms var(--ease); }
+    .archive.is-visible { opacity:1; pointer-events:auto; }
+    .stage { position:relative; width:min(100vw, 177.7778vh); height:min(100vh, 56.25vw); max-width:100vw; max-height:100vh; overflow:hidden; isolation:isolate; background:radial-gradient(circle at 50% 46%, #ffffff 0 31%, #f7f3f1 67%, #ebe6e4 100%); }
+    .stage::before { content:""; position:absolute; inset:0; background:radial-gradient(rgba(0,0,0,.05) .65px, transparent .65px); background-size:6px 6px; opacity:.18; pointer-events:none; }
+    .brand { position:absolute; top:4%; left:3.2%; z-index:6; display:flex; gap:.55vw; }
+    .brand i { display:block; width:3vw; height:1vw; background:var(--ink); transform:skewX(-28deg); }
+    .brand i:last-child { background:var(--blue); }
+    .tagline { position:absolute; z-index:6; top:4.1%; right:3.4%; font-size:clamp(10px,1.05vw,20px); font-weight:900; line-height:1.05; text-align:right; }
+    .status { display:flex; gap:.35vw; align-items:center; margin-top:.3vw; justify-content:flex-end; }
+    .status i { display:block; width:1.18vw; height:1.18vw; border:2px solid var(--blue); border-radius:50%; }
+    .status i:last-child { background:var(--blue); }
+    .ghost { position:absolute; z-index:1; left:5.9%; top:34%; color:transparent; font-size:clamp(78px,14vw,275px); font-weight:900; letter-spacing:-.08em; line-height:.78; -webkit-text-stroke:1px rgba(22,141,233,.7); user-select:none; }
+    .title { position:absolute; z-index:3; left:6%; top:65.4%; font-size:clamp(37px,6.55vw,126px); font-weight:900; letter-spacing:-.09em; line-height:.78; user-select:none; }
+    .title em { color:var(--blue); font-style:normal; }
+    .subtitle { position:absolute; z-index:3; left:17.1%; top:77.5%; font-size:clamp(22px,3.2vw,62px); font-weight:900; letter-spacing:.02em; }
+    .script { position:absolute; z-index:3; right:5.9%; top:76%; color:var(--blue); font-family:cursive; font-size:clamp(31px,5vw,94px); font-style:italic; transform:rotate(-5deg); }
+    .card { position:absolute; z-index:5; display:flex; flex-direction:column; justify-content:space-between; padding:1.15vw 1.22vw; width:20%; height:24%; color:var(--ink); text-align:left; background:#fffefd; border:.34vw solid #050609; border-radius:1.5vw; box-shadow:.55vw .65vw 0 rgba(0,0,0,.25); cursor:pointer; transition:transform 220ms var(--ease), box-shadow 220ms var(--ease); }
+    .card:hover, .card:focus-visible { transform:translateY(-1.05vw) rotate(var(--tilt)); box-shadow:.8vw 1.05vw 0 rgba(0,0,0,.22); outline:3px solid rgba(22,141,233,.55); outline-offset:4px; }
+    .card small { color:var(--blue); font-size:clamp(20px,3.2vw,61px); font-weight:900; line-height:.75; }
+    .card b { display:block; margin-top:.4vw; font-size:clamp(15px,2.2vw,43px); line-height:1.05; }
+    .card span { display:block; margin-top:.4vw; font-family:"Trebuchet MS","Microsoft YaHei",sans-serif; font-size:clamp(8px,.92vw,18px); font-weight:900; letter-spacing:.01em; }
+    .card .go { display:flex; justify-content:space-between; align-items:end; color:var(--blue); font-size:clamp(13px,1.55vw,29px); line-height:.75; }
+    .barcode { width:27%; height:14%; background:repeating-linear-gradient(90deg, #111 0 .28vw, transparent .28vw .48vw); }
+    .card-1 { --tilt:-17deg; left:10.7%; top:15.4%; transform:rotate(-17deg); }
+    .card-2 { --tilt:-3deg; left:35%; top:8.8%; transform:rotate(-3deg); }
+    .card-3 { --tilt:3deg; left:56.7%; top:8.8%; transform:rotate(3deg); }
+    .card-4 { --tilt:15deg; left:76.7%; top:15.5%; transform:rotate(15deg); }
+    .identity { position:absolute; z-index:2; left:41.5%; top:32%; width:18%; height:44%; display:grid; place-items:center; filter:drop-shadow(1vw 1.1vw .45vw rgba(0,0,0,.18)); }
+    .profile-orb { position:relative; width:100%; aspect-ratio:1; border:.5vw solid var(--ink); border-radius:50%; background:radial-gradient(circle at 40% 30%, #9ef2ef 0 15%, #42c9dc 16% 42%, #1786d8 43% 100%); overflow:hidden; }
+    .profile-orb::before { content:""; position:absolute; left:19%; top:16%; width:62%; height:62%; border-radius:48% 48% 42% 42%; background:#fffdf5; box-shadow:0 .7vw 0 rgba(0,0,0,.15); }
+    .profile-orb::after { content:"ANONYMOUS"; position:absolute; left:50%; top:65%; width:130%; transform:translateX(-50%) rotate(-8deg); padding:.5vw 0; color:#fff; font-size:clamp(8px,1.15vw,22px); font-weight:900; letter-spacing:.08em; text-align:center; background:var(--ink); }
+    .profile-mark { position:absolute; z-index:2; top:35%; display:flex; gap:22%; width:43%; height:10%; }
+    .profile-mark::before, .profile-mark::after { content:""; flex:1; border:.25vw solid var(--ink); border-radius:999px; background:#fff; }
+    .personal-strip { position:absolute; z-index:6; left:0; right:0; bottom:0; height:10.7%; display:flex; align-items:center; justify-content:space-between; padding:0 4.8%; color:#fff; background:#050505; border-top:.25vw solid var(--ink); }
+    .personal-strip b { padding:.5vw 1.15vw; color:var(--blue); font-size:clamp(11px,1.55vw,30px); font-style:italic; border:.16vw solid var(--blue); border-radius:99px; }
+    .personal-strip span { margin-left:1.2vw; font-size:clamp(8px,.78vw,15px); font-weight:900; letter-spacing:.03em; }
+    .redacted { min-width:31%; padding:.72vw 1.3vw; color:#dceaf4; font-size:clamp(9px,1.28vw,24px); font-weight:900; letter-spacing:.12em; text-align:center; border:.15vw solid rgba(255,255,255,.8); border-radius:99px; }
+    .redacted::before { content:"●"; margin-right:.9vw; color:var(--blue); }
+    .modal-backdrop { position:fixed; inset:0; z-index:40; display:grid; place-items:center; padding:22px; background:rgba(4,8,15,.72); opacity:0; pointer-events:none; transition:opacity 260ms ease; }
+    .modal-backdrop.is-open { opacity:1; pointer-events:auto; }
+    .modal { width:min(1000px, 82vw); min-height:310px; overflow:hidden; background:#fffefb; border:1px solid rgba(255,255,255,.8); border-radius:24px; box-shadow:0 28px 90px rgba(0,0,0,.45); transform:translateY(18px) scale(.97); transition:transform 280ms var(--ease); }
+    .modal-backdrop.is-open .modal { transform:translateY(0) scale(1); }
+    .modal-header { display:flex; align-items:start; justify-content:space-between; padding:25px 28px 18px; border-bottom:1px solid #e4e8ec; }
+    .modal-kicker { margin:0 0 6px; color:var(--blue-deep); font-size:12px; font-weight:900; letter-spacing:.12em; }
+    .modal h2 { margin:0; font-size:clamp(25px,3vw,43px); letter-spacing:-.055em; }
+    .modal-close { width:37px; height:37px; color:var(--ink); font-size:24px; line-height:1; background:#fff; border:1px solid #d8e1e8; border-radius:50%; cursor:pointer; }
+    .modal-content { min-height:220px; padding:28px; color:#394858; font-family:"Microsoft YaHei","PingFang SC",sans-serif; line-height:1.8; }
+    .modal-content.is-blank { min-height:370px; background:linear-gradient(135deg,#fffefb,#f7fbfd); }
+    .template-note { max-width:660px; margin:0; padding:18px 20px; background:#f1f8fe; border-left:4px solid var(--blue); }
+    @media (max-width:740px) {
+      .stage { width:100vw; height:56.25vw; min-height:300px; }
+      .modal { width:100%; min-height:250px; }
+      .modal-header { padding:20px 19px 14px; }
+      .modal-content { min-height:180px; padding:20px; font-size:14px; }
+      .modal-content.is-blank { min-height:260px; }
+      .card { border-width:.42vw; }
+    }
+    @media (prefers-reduced-motion:reduce) { *, *::before, *::after { scroll-behavior:auto !important; transition:none !important; } }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="intro" id="intro" aria-label="开场">
+      <button id="enterButton" type="button">进入匿名档案馆</button>
+    </section>
+
+    <section class="archive" id="archive" aria-label="匿名档案馆互动主页">
+      <div class="stage">
+        <div class="brand" aria-label="档案馆标识"><i></i><i></i><i></i></div>
+        <div class="tagline">CREATE SPACE<br>WITH IDEAS<div class="status" aria-hidden="true"><i></i><i></i></div></div>
+        <div class="ghost" aria-hidden="true">ARCHIVE</div>
+        <button class="card card-1" type="button" data-key="01" aria-label="打开个人经历空白栏"><small>01</small><b>个人经历</b><span>EXPERIENCE</span><div class="go"><i>→</i><i class="barcode"></i></div></button>
+        <button class="card card-2" type="button" data-key="02" aria-label="打开竞赛作品模板"><small>02</small><b>竞赛作品</b><span>COMPETITION</span><div class="go"><i>→</i><i class="barcode"></i></div></button>
+        <button class="card card-3" type="button" data-key="03" aria-label="打开 AI 作品模板"><small>03</small><b>AI作品</b><span>AI WORKS</span><div class="go"><i>→</i><i class="barcode"></i></div></button>
+        <button class="card card-4" type="button" data-key="04" aria-label="打开生活模板"><small>04</small><b>生活</b><span>DAILY LIFE</span><div class="go"><i>→</i><i class="barcode"></i></div></button>
+        <div class="identity" aria-hidden="true"><div class="profile-orb"></div><div class="profile-mark"></div></div>
+        <div class="title"><em>PERSONAL</em> ARCHIVE</div>
+        <div class="subtitle">个人档案馆模板</div>
+        <div class="script">About Template</div>
+        <footer class="personal-strip"><div><b>PERSONAL</b><span>++ KEEP ONLY WHAT YOU CHOOSE TO SHARE.</span></div><div class="redacted">PERSONAL INFORMATION REMOVED</div></footer>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+      <header class="modal-header"><div><p class="modal-kicker" id="modalKicker"></p><h2 id="modalTitle"></h2></div><button class="modal-close" id="modalClose" type="button" aria-label="关闭详情">×</button></header>
+      <div class="modal-content" id="modalContent"></div>
+    </section>
+  </div>
+
+  <script>
+    (() => {
+      const intro = document.getElementById('intro');
+      const archive = document.getElementById('archive');
+      const enterButton = document.getElementById('enterButton');
+      const backdrop = document.getElementById('modalBackdrop');
+      const modal = backdrop.querySelector('.modal');
+      const close = document.getElementById('modalClose');
+      const title = document.getElementById('modalTitle');
+      const kicker = document.getElementById('modalKicker');
+      const content = document.getElementById('modalContent');
+      const detailData = {
+        '01': { kicker:'01 / 个人经历', title:'个人经历', blank:true },
+        '02': { kicker:'02 / 竞赛作品', title:'竞赛作品', copy:'此处为匿名模板内容区。可替换为公开展示的竞赛作品、图纸与说明。' },
+        '03': { kicker:'03 / AI作品', title:'AI作品', copy:'此处为匿名模板内容区。可替换为工具、研究或产品项目。' },
+        '04': { kicker:'04 / 生活', title:'生活', copy:'此处为匿名模板内容区。可替换为你愿意公开的日常记录。' }
+      };
+      function enter() { intro.classList.add('is-hidden'); archive.classList.add('is-visible'); }
+      function openDetail(key) {
+        const detail = detailData[key];
+        title.textContent = detail.title; kicker.textContent = detail.kicker;
+        content.classList.toggle('is-blank', Boolean(detail.blank));
+        content.innerHTML = detail.blank ? '' : '<p class="template-note">' + detail.copy + '</p>';
+        backdrop.classList.add('is-open'); backdrop.setAttribute('aria-hidden','false'); close.focus();
+      }
+      function closeDetail() { backdrop.classList.remove('is-open'); backdrop.setAttribute('aria-hidden','true'); }
+      enterButton.addEventListener('click', enter);
+      document.querySelectorAll('.card').forEach(card => card.addEventListener('click', () => openDetail(card.dataset.key)));
+      close.addEventListener('click', closeDetail);
+      backdrop.addEventListener('click', event => { if (event.target === backdrop) closeDetail(); });
+      document.addEventListener('keydown', event => { if (event.key === 'Escape') closeDetail(); if (event.key === 'Enter' && !archive.classList.contains('is-visible')) enter(); });
+    })();
+  </script>
+</body>
+</html>
